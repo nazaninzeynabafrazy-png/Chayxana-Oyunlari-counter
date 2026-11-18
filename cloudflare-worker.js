@@ -161,12 +161,18 @@ function rudeCheck(s) {
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': '*' };
 export default {
   async fetch(request, env) {
-    if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
-    const stub = env.PRESENCE.get(env.PRESENCE.idFromName('main'));
-    const res = await stub.fetch(request);
-    const out = new Response(res.body, res);
-    Object.entries(CORS).forEach(([k, v]) => out.headers.set(k, v));
-    out.headers.set('Cache-Control', 'no-store');
-    return out;
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
+    const url = new URL(request.url);
+    if (url.pathname === '/version') return new Response('counter v100 cors-ok', { headers: { ...CORS, 'Content-Type': 'text/plain' } });
+    try {
+      const stub = env.PRESENCE.get(env.PRESENCE.idFromName('main'));
+      const res = await stub.fetch(request);
+      const out = new Response(res.body, res);
+      Object.entries(CORS).forEach(([k, v]) => out.headers.set(k, v));
+      out.headers.set('Cache-Control', 'no-store');
+      return out;
+    } catch (err) {
+      return new Response(JSON.stringify({ ok: false, error: String(err) }), { status: 500, headers: { ...CORS, 'Content-Type': 'application/json' } });
+    }
   }
 };
