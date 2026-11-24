@@ -1,4 +1,4 @@
-# Parlour counter
+# Çayxana Oyunları counter
 
 The online service for The Parlour: live player count, invite counter, clans (names, avatars, preset chat, weekly ranking, shared chest) and optional G-rated GIFs.
 
